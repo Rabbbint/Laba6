@@ -3,20 +3,27 @@ class Node:
         self.data = data
         self.next = None
 
-
 class LinkedList:
     def __init__(self):
         self.head = None
 
     def append(self, data):
         new_node = Node(data)
-        if self.head is None:
+        if not self.head:
             self.head = new_node
             return
         last_node = self.head
         while last_node.next:
             last_node = last_node.next
         last_node.next = new_node
+
+    def to_list(self):
+        result = []
+        current = self.head
+        while current:
+            result.append(current.data)
+            current = current.next
+        return result
 
     def print_list(self):
         current_node = self.head
@@ -25,43 +32,43 @@ class LinkedList:
             current_node = current_node.next
 
     def sort_list(self):
-        if self.head is None or self.head.next is None:
+        if not self.head or not self.head.next:
             return
 
-        # Разделение списка на две половины
-        slow_ptr = self.head
-        fast_ptr = self.head.next
-        while fast_ptr and fast_ptr.next:
-            slow_ptr = slow_ptr.next
-            fast_ptr = fast_ptr.next.next
+        new_head = None
+        current = self.head
+        while current:
+            next_node = current.next
+            if not new_head or current.data <= new_head.data:
+                current.next = new_head
+                new_head = current
+            else:
+                search = new_head
+                while search.next and search.next.data < current.data:
+                    search = search.next
+                current.next = search.next
+                search.next = current
+            current = next_node
 
-        mid_node = slow_ptr.next
-        slow_ptr.next = None
+        self.head = new_head
 
-        # Рекурсивная сортировка левой и правой половин
-        left_half = LinkedList()
-        left_half.head = self.head
-        left_half.sort_list()
+    def __str__(self):
+        if not self.head:
+            return ""
 
-        right_half = LinkedList()
-        right_half.head = mid_node
-        right_half.sort_list()
+        result = []
+        current = self.head
+        while current:
+            result.append(str(current.data))
+            current = current.next
 
-        # Слияние отсортированных половин
-        self.head = self.merge(left_half.head, right_half.head)
+        return "".join(result)
 
-    def merge(self, left_head, right_head):
-        if not left_head:
-            return right_head
-        if not right_head:
-            return left_head
-
-        if left_head.data <= right_head.data:
-            left_head.next = self.merge(left_head.next, right_head)
-            return left_head
-        else:
-            right_head.next = self.merge(left_head, right_head.next)
-            return right_head
+    def __iter__(self):
+        current_node = self.head
+        while current_node:
+            yield current_node
+            current_node = current_node.next
 
 def get_user_input():
     llist = LinkedList()
@@ -82,7 +89,7 @@ def main():
 
     llist.sort_list()
     print("Отсортированная последовательность чисел:")
-    llist.print_list()
+    print(llist)
 
 if __name__ == "__main__":
     main()
