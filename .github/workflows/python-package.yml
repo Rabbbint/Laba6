@@ -20,4 +20,4 @@ jobs:
 
     - name: Run tests
       run: |
-        python -m unittest test_one.py
+        python -m unittest Test_one.py
